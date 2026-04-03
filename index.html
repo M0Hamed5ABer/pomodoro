@@ -837,7 +837,17 @@
         if (!auto) isRunning = false;
         updateMainBtn();
       }
-
+      // saveTimerState
+      function saveTimerState() {
+        const state = {
+          mode: mode,
+          remainingSeconds: remainingSeconds,
+          isRunning: isRunning,
+          expectedEndTime: expectedEndTime,
+          lastUpdated: Date.now(),
+        };
+        localStorage.setItem("pomodoro_current_state", JSON.stringify(state));
+      }
       // ===== تشغيل/إيقاف المؤقت =====
       function toggleTimer() {
         if (isRunning) {
@@ -871,17 +881,18 @@
       // ===== النبضة الزمنية =====
       function tick() {
         const now = Date.now();
-        // نحسب الثواني المتبقية من خلال طرح الوقت الحالي من وقت النهاية المتوقع
         remainingSeconds = Math.round((expectedEndTime - now) / 1000);
 
         if (remainingSeconds <= 0) {
           remainingSeconds = 0;
+          localStorage.removeItem("pomodoro_current_state"); // نمسح الحالة لما يخلص
           onSessionComplete();
           return;
         }
 
         updateDisplay();
         updateRing(remainingSeconds / totalSeconds);
+        saveTimerState(); // <--- ضيف السطر ده هنا
       }
 
       // ===== انتهاء الجلسة =====
@@ -1059,21 +1070,54 @@
 
       // ===== التهيئة الأولى =====
       function init() {
-        // تحميل الإعدادات المحفوظة
+        // 1. تحميل الإعدادات والإحصائيات كالعادة
+        loadStats();
         document.getElementById("inp-focus").value = settings.focusMins;
         document.getElementById("inp-rest").value = settings.restMins;
         document.getElementById("inp-long").value = settings.longMins;
         document.getElementById("inp-rounds").value = settings.roundsBeforeLong;
 
-        // تحميل إحصائيات اليوم
-        loadStats();
+        // 2. محاولة استعادة حالة المؤقت السابقة
+        const savedState = localStorage.getItem("pomodoro_current_state");
 
-        // ضبط المؤقت
-        remainingSeconds = settings.focusMins * 60;
-        totalSeconds = remainingSeconds;
+        if (savedState) {
+          const state = JSON.parse(savedState);
+          mode = state.mode;
+          isRunning = state.isRunning;
+
+          if (isRunning) {
+            // لو كان شغال، نحسب الوقت اللي فات وإحنا قافلين
+            const now = Date.now();
+            expectedEndTime = state.expectedEndTime;
+            remainingSeconds = Math.round((expectedEndTime - now) / 1000);
+
+            if (remainingSeconds > 0) {
+              startTimer(); // كمل عد من مكان ما كنت
+            } else {
+              remainingSeconds = 0;
+              onSessionComplete();
+            }
+          } else {
+            // لو كان واقف (Paused)، نرجعه لنفس الرقم اللي وقف عنده
+            remainingSeconds = state.remainingSeconds;
+          }
+
+          // تحديث الواجهة بناءً على الحالة المستعادة
+          switchMode(mode, true);
+        } else {
+          // لو مفيش حالة محفوظة، ابدأ عادي
+          remainingSeconds = settings.focusMins * 60;
+        }
+
+        totalSeconds =
+          (mode === "focus"
+            ? settings.focusMins
+            : mode === "rest"
+              ? settings.restMins
+              : settings.longMins) * 60;
 
         updateDisplay();
-        updateRing(1);
+        updateRing(remainingSeconds / totalSeconds);
         updateStats();
       }
 
