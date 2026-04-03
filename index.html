@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>بومودورو | مؤقت التركيز</title>
+    <title>بومودورو</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
@@ -357,17 +357,25 @@
 
       .settings-panel {
         background: var(--surface);
-        border: 1px solid var(--border);
+        /* نخلي الحدود شفافة في البداية عشان متبانش كخط */
+        border: 1px solid transparent;
         border-radius: 16px;
         overflow: hidden;
         max-height: 0;
+        /* نقلل الشفافية لصفر عشان نضمن اختفاء أي أثر */
+        opacity: 0;
         transition:
           max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-          padding 0.4s;
+          border-color 0.4s,
+          opacity 0.4s;
       }
 
       .settings-panel.open {
         max-height: 500px;
+        /* نرجع لون الحدود الطبيعي لما اللوحة تفتح */
+        border-color: var(--border);
+        /* نرجع الشفافية كاملة */
+        opacity: 1;
       }
 
       .settings-inner {
@@ -456,7 +464,13 @@
         position: fixed;
         bottom: 2rem;
         left: 50%;
-        transform: translateX(-50%) translateY(120%);
+        /* ننزله مسافة ثابتة وكبيرة للأسفل بدلاً من نسبة مئوية */
+        transform: translateX(-50%) translateY(50px);
+        /* نجعله شفافاً تماماً */
+        opacity: 0;
+        /* نمنعه من التفاعل مع الماوس وهو مخفي */
+        visibility: hidden;
+
         background: var(--surface2);
         border: 1px solid var(--border);
         border-radius: 12px;
@@ -465,12 +479,16 @@
         color: var(--text);
         white-space: nowrap;
         z-index: 100;
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* نطبق الأنيميشن على كل التغييرات (الحركة، الشفافية، الظهور) */
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       }
 
       #toast.show {
+        /* إعادته لمكانه الطبيعي وإظهاره */
         transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        visibility: visible;
       }
 
       /* ===== Responsive ===== */
@@ -692,6 +710,7 @@
       let intervalId = null;
       let sessionRounds = 0; // جولات الجلسة الحالية
       let focusMinutesTotal = 0; // إجمالي دقائق التركيز
+      let expectedEndTime = 0; // متغير جديد لتخزين وقت النهاية الفعلي
 
       // ===== تحميل الإعدادات من localStorage =====
       function loadSettings() {
@@ -832,7 +851,12 @@
         isRunning = true;
         document.getElementById("app").classList.add("ticking");
         updateMainBtn();
-        intervalId = setInterval(tick, 1000);
+
+        // حساب وقت الانتهاء بناءً على ساعة الجهاز الحقيقية بالملي ثانية
+        expectedEndTime = Date.now() + remainingSeconds * 1000;
+
+        // خلينا النبضة أسرع (نصف ثانية) عشان الشاشة تتحدث فوراً أول ما تفتح الموبايل
+        intervalId = setInterval(tick, 500);
       }
 
       function pauseTimer() {
@@ -841,21 +865,19 @@
         clearInterval(intervalId);
         intervalId = null;
         updateMainBtn();
+        // remainingSeconds محتفظة بآخر قيمة صحيحة تم حسابها
       }
 
       // ===== النبضة الزمنية =====
       function tick() {
+        const now = Date.now();
+        // نحسب الثواني المتبقية من خلال طرح الوقت الحالي من وقت النهاية المتوقع
+        remainingSeconds = Math.round((expectedEndTime - now) / 1000);
+
         if (remainingSeconds <= 0) {
+          remainingSeconds = 0;
           onSessionComplete();
           return;
-        }
-        remainingSeconds--;
-
-        // تراكم دقائق التركيز
-        if (mode === "focus" && remainingSeconds % 60 === 0) {
-          focusMinutesTotal++;
-          saveStats();
-          updateStats();
         }
 
         updateDisplay();
