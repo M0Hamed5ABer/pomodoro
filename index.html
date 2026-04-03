@@ -10,12 +10,10 @@
       rel="stylesheet"
     />
     <style>
-      /* ===== CSS Variables & Reset ===== */
       :root {
         --focus-hue: 12;
         --rest-hue: 195;
         --long-hue: 150;
-
         --bg: #0d0d0f;
         --surface: #161619;
         --surface2: #1e1e23;
@@ -28,9 +26,7 @@
         --transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
@@ -47,28 +43,18 @@
         overflow-x: hidden;
       }
 
-      /* ===== Background Mesh ===== */
       body::before {
         content: "";
         position: fixed;
         inset: 0;
         background:
-          radial-gradient(
-            ellipse 60% 50% at 20% 10%,
-            hsla(var(--focus-hue), 80%, 40%, 0.12) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 50% 60% at 80% 90%,
-            hsla(var(--rest-hue), 80%, 40%, 0.08) 0%,
-            transparent 60%
-          );
+          radial-gradient(ellipse 60% 50% at 20% 10%, hsla(var(--focus-hue), 80%, 40%, 0.12) 0%, transparent 60%),
+          radial-gradient(ellipse 50% 60% at 80% 90%, hsla(var(--rest-hue), 80%, 40%, 0.08) 0%, transparent 60%);
         pointer-events: none;
         transition: background var(--transition);
         z-index: 0;
       }
 
-      /* ===== Layout ===== */
       .app {
         position: relative;
         z-index: 1;
@@ -79,7 +65,6 @@
         gap: 1.5rem;
       }
 
-      /* ===== Header ===== */
       header {
         text-align: center;
         padding-top: 1rem;
@@ -93,7 +78,6 @@
         color: var(--text-dim);
       }
 
-      /* ===== Session Tabs ===== */
       .session-tabs {
         display: flex;
         gap: 0.5rem;
@@ -124,7 +108,6 @@
         box-shadow: 0 0 18px hsla(var(--focus-hue), 90%, 62%, 0.4);
       }
 
-      /* ===== Timer Ring ===== */
       .timer-wrap {
         display: flex;
         flex-direction: column;
@@ -157,9 +140,7 @@
         stroke-width: 6;
         stroke-linecap: round;
         filter: drop-shadow(0 0 8px var(--accent-glow));
-        transition:
-          stroke-dashoffset 1s linear,
-          stroke 0.6s ease;
+        transition: stroke-dashoffset 1s linear, stroke 0.6s ease;
       }
 
       .timer-center {
@@ -192,7 +173,6 @@
         transition: color var(--transition);
       }
 
-      /* ===== Controls ===== */
       .controls {
         display: flex;
         gap: 0.75rem;
@@ -210,9 +190,7 @@
         letter-spacing: 0.03em;
       }
 
-      .btn:active {
-        transform: scale(0.95);
-      }
+      .btn:active { transform: scale(0.95); }
 
       .btn-primary {
         background: var(--accent);
@@ -245,7 +223,6 @@
         border-color: var(--accent);
       }
 
-      /* ===== Stats Bar ===== */
       .stats-bar {
         display: flex;
         gap: 1rem;
@@ -282,7 +259,6 @@
         background: var(--border);
       }
 
-      /* ===== Rounds Dots ===== */
       .rounds-visual {
         display: flex;
         justify-content: center;
@@ -311,18 +287,10 @@
       }
 
       @keyframes pulse-dot {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 0.7;
-        }
-        50% {
-          transform: scale(1.3);
-          opacity: 1;
-        }
+        0%, 100% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.3); opacity: 1; }
       }
 
-      /* ===== Settings Panel ===== */
       .settings-toggle {
         display: flex;
         align-items: center;
@@ -342,39 +310,28 @@
         transition: color 0.2s;
       }
 
-      .settings-toggle:hover {
-        color: var(--text);
-      }
+      .settings-toggle:hover { color: var(--text); }
 
       .settings-toggle .arrow {
         transition: transform 0.3s ease;
         font-size: 0.7rem;
       }
 
-      .settings-toggle.open .arrow {
-        transform: rotate(180deg);
-      }
+      .settings-toggle.open .arrow { transform: rotate(180deg); }
 
       .settings-panel {
         background: var(--surface);
-        /* نخلي الحدود شفافة في البداية عشان متبانش كخط */
         border: 1px solid transparent;
         border-radius: 16px;
         overflow: hidden;
         max-height: 0;
-        /* نقلل الشفافية لصفر عشان نضمن اختفاء أي أثر */
         opacity: 0;
-        transition:
-          max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-          border-color 0.4s,
-          opacity 0.4s;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s, opacity 0.4s;
       }
 
       .settings-panel.open {
         max-height: 500px;
-        /* نرجع لون الحدود الطبيعي لما اللوحة تفتح */
         border-color: var(--border);
-        /* نرجع الشفافية كاملة */
         opacity: 1;
       }
 
@@ -441,9 +398,7 @@
         box-shadow: 0 0 18px hsla(var(--focus-hue), 90%, 62%, 0.3);
       }
 
-      .btn-apply:hover {
-        filter: brightness(1.15);
-      }
+      .btn-apply:hover { filter: brightness(1.15); }
 
       .btn-reset {
         flex: 1;
@@ -459,18 +414,13 @@
         color: #e05555;
       }
 
-      /* ===== Toast ===== */
       #toast {
         position: fixed;
         bottom: 2rem;
         left: 50%;
-        /* ننزله مسافة ثابتة وكبيرة للأسفل بدلاً من نسبة مئوية */
         transform: translateX(-50%) translateY(50px);
-        /* نجعله شفافاً تماماً */
         opacity: 0;
-        /* نمنعه من التفاعل مع الماوس وهو مخفي */
         visibility: hidden;
-
         background: var(--surface2);
         border: 1px solid var(--border);
         border-radius: 12px;
@@ -479,33 +429,21 @@
         color: var(--text);
         white-space: nowrap;
         z-index: 100;
-        /* نطبق الأنيميشن على كل التغييرات (الحركة، الشفافية، الظهور) */
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       }
 
       #toast.show {
-        /* إعادته لمكانه الطبيعي وإظهاره */
         transform: translateX(-50%) translateY(0);
         opacity: 1;
         visibility: visible;
       }
 
-      /* ===== Responsive ===== */
       @media (max-width: 400px) {
-        .stats-bar {
-          padding: 0.75rem;
-          gap: 0.6rem;
-        }
-        .stat-value {
-          font-size: 1.3rem;
-        }
-        .settings-grid {
-          grid-template-columns: 1fr 1fr;
-        }
+        .stats-bar { padding: 0.75rem; gap: 0.6rem; }
+        .stat-value { font-size: 1.3rem; }
       }
 
-      /* ===== Mode Color Transitions ===== */
       body.mode-rest {
         --focus-hue: 195;
         --accent: hsl(195, 80%, 58%);
@@ -518,17 +456,10 @@
         --accent-glow: hsl(150, 70%, 52%);
       }
 
-      /* Tick animation */
       @keyframes tick-pulse {
-        0% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.7;
-        }
-        100% {
-          opacity: 1;
-        }
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
       }
 
       .ticking #timer-display {
@@ -538,93 +469,37 @@
   </head>
   <body>
     <div class="app" id="app">
-      <!-- Header -->
       <header>
         <h1>🍅 بومودورو</h1>
       </header>
 
-      <!-- Session Tabs -->
       <div class="session-tabs" role="tablist">
-        <button
-          class="session-tab active"
-          id="tab-focus"
-          onclick="switchMode('focus')"
-          role="tab"
-        >
-          تركيز
-        </button>
-        <button
-          class="session-tab"
-          id="tab-rest"
-          onclick="switchMode('rest')"
-          role="tab"
-        >
-          راحة قصيرة
-        </button>
-        <button
-          class="session-tab"
-          id="tab-long"
-          onclick="switchMode('long')"
-          role="tab"
-        >
-          راحة طويلة
-        </button>
+        <button class="session-tab active" id="tab-focus" onclick="switchMode('focus')" role="tab">تركيز</button>
+        <button class="session-tab" id="tab-rest" onclick="switchMode('rest')" role="tab">راحة قصيرة</button>
+        <button class="session-tab" id="tab-long" onclick="switchMode('long')" role="tab">راحة طويلة</button>
       </div>
 
-      <!-- Timer Ring -->
       <div class="timer-wrap">
         <div class="ring-container">
           <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
             <circle class="ring-bg" cx="60" cy="60" r="54" />
-            <circle
-              class="ring-progress"
-              id="ring-progress"
-              cx="60"
-              cy="60"
-              r="54"
-              stroke-dasharray="339.3"
-              stroke-dashoffset="0"
-            />
+            <circle class="ring-progress" id="ring-progress" cx="60" cy="60" r="54"
+              stroke-dasharray="339.3" stroke-dashoffset="0" />
           </svg>
           <div class="timer-center">
             <div id="timer-display">25:00</div>
             <div class="session-label" id="session-label">وقت تركيز</div>
           </div>
         </div>
-
-        <!-- Round dots -->
         <div class="rounds-visual" id="rounds-dots"></div>
       </div>
 
-      <!-- Controls -->
       <div class="controls">
-        <button
-          class="btn btn-icon"
-          onclick="resetTimer()"
-          title="إعادة تعيين"
-          aria-label="إعادة تعيين"
-        >
-          ↺
-        </button>
-        <button
-          class="btn btn-primary"
-          id="main-btn"
-          onclick="toggleTimer()"
-          aria-label="بدء"
-        >
-          ▶ ابدأ
-        </button>
-        <button
-          class="btn btn-icon"
-          onclick="skipSession()"
-          title="تخطي"
-          aria-label="تخطي الجلسة"
-        >
-          ⏭
-        </button>
+        <button class="btn btn-icon" onclick="resetTimer()" title="إعادة تعيين" aria-label="إعادة تعيين">↺</button>
+        <button class="btn btn-primary" id="main-btn" onclick="toggleTimer()" aria-label="بدء">▶ ابدأ</button>
+        <button class="btn btn-icon" onclick="skipSession()" title="تخطي" aria-label="تخطي الجلسة">⏭</button>
       </div>
 
-      <!-- Stats -->
       <div class="stats-bar" aria-label="إحصائيات">
         <div class="stat-item">
           <div class="stat-value" id="stat-today">0</div>
@@ -632,8 +507,8 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-          <div class="stat-value" id="stat-session">0</div>
-          <div class="stat-label">جلسة الآن</div>
+          <div class="stat-value" id="stat-session">0/4</div>
+          <div class="stat-label">الجولة الحالية</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
@@ -642,23 +517,11 @@
         </div>
       </div>
 
-      <!-- Settings Toggle -->
-      <button
-        class="settings-toggle"
-        id="settings-toggle"
-        onclick="toggleSettings()"
-        aria-expanded="false"
-      >
+      <button class="settings-toggle" id="settings-toggle" onclick="toggleSettings()" aria-expanded="false">
         ⚙ الإعدادات <span class="arrow">▼</span>
       </button>
 
-      <!-- Settings Panel -->
-      <div
-        class="settings-panel"
-        id="settings-panel"
-        role="region"
-        aria-label="إعدادات المؤقت"
-      >
+      <div class="settings-panel" id="settings-panel" role="region" aria-label="إعدادات المؤقت">
         <div class="settings-inner">
           <div class="settings-grid">
             <div class="setting-field">
@@ -679,62 +542,45 @@
             </div>
           </div>
           <div class="settings-actions">
-            <button class="btn btn-apply" onclick="applySettings()">
-              ✓ تطبيق
-            </button>
-            <button class="btn btn-reset" onclick="resetAll()">
-              ↺ إعادة ضبط
-            </button>
+            <button class="btn btn-apply" onclick="applySettings()">✓ تطبيق</button>
+            <button class="btn btn-reset" onclick="resetAll()">↺ إعادة ضبط</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" role="status" aria-live="polite"></div>
 
     <script>
-      // ===== الحالة الأساسية =====
-      const DEFAULTS = {
-        focusMins: 25,
-        restMins: 5,
-        longMins: 15,
-        roundsBeforeLong: 4,
-      };
+      const DEFAULTS = { focusMins: 25, restMins: 5, longMins: 15, roundsBeforeLong: 4 };
 
       let settings = loadSettings();
-      let mode = "focus"; // 'focus' | 'rest' | 'long'
+      let mode = "focus";
       let isRunning = false;
       let remainingSeconds = settings.focusMins * 60;
       let totalSeconds = settings.focusMins * 60;
       let intervalId = null;
-      let sessionRounds = 0; // جولات الجلسة الحالية
-      let focusMinutesTotal = 0; // إجمالي دقائق التركيز
-      let expectedEndTime = 0; // متغير جديد لتخزين وقت النهاية الفعلي
+      let sessionRounds = 0;
+      let focusMinutesTotal = 0;
+      let expectedEndTime = 0;
 
-      // ===== تحميل الإعدادات من localStorage =====
       function loadSettings() {
         try {
-          const stored = localStorage.getItem("pomodoro_settings");
-          return stored
-            ? { ...DEFAULTS, ...JSON.parse(stored) }
-            : { ...DEFAULTS };
-        } catch {
-          return { ...DEFAULTS };
-        }
+          const s = localStorage.getItem("pomodoro_settings");
+          return s ? { ...DEFAULTS, ...JSON.parse(s) } : { ...DEFAULTS };
+        } catch { return { ...DEFAULTS }; }
       }
 
       function saveSettings() {
         localStorage.setItem("pomodoro_settings", JSON.stringify(settings));
       }
 
-      // ===== تحميل الإحصائيات اليومية =====
       function loadStats() {
         try {
           const today = new Date().toDateString();
-          const stored = localStorage.getItem("pomodoro_stats");
-          if (stored) {
-            const data = JSON.parse(stored);
+          const s = localStorage.getItem("pomodoro_stats");
+          if (s) {
+            const data = JSON.parse(s);
             if (data.date === today) {
               sessionRounds = data.sessionRounds || 0;
               focusMinutesTotal = data.focusMinutes || 0;
@@ -748,17 +594,11 @@
 
       function saveStats() {
         const today = new Date().toDateString();
-        localStorage.setItem(
-          "pomodoro_stats",
-          JSON.stringify({
-            date: today,
-            sessionRounds,
-            focusMinutes: focusMinutesTotal,
-          }),
-        );
+        localStorage.setItem("pomodoro_stats", JSON.stringify({
+          date: today, sessionRounds, focusMinutes: focusMinutesTotal
+        }));
       }
 
-      // ===== طلب إذن الإشعارات =====
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
@@ -768,15 +608,13 @@
           new Notification(title, { body, icon: "🍅" });
         }
         playBeep();
-        showToast(`${title} — ${body}`);
+        showToast(title + " — " + body);
       }
 
-      // ===== صوت البيب =====
       function playBeep() {
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const notes = [880, 1100, 1320];
-          notes.forEach((freq, i) => {
+          [880, 1100, 1320].forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
@@ -793,79 +631,62 @@
         } catch {}
       }
 
-      // ===== التبديل بين الأوضاع =====
-      function switchMode(newMode, auto = false) {
-        if (isRunning && !auto) {
-          pauseTimer();
-        }
+      // FIX 1: switchMode لا تلمس isRunning ولا تبدأ/توقف التايمر بنفسها
+      // الـ auto flag اتشالت — المتصل هو اللي يتحكم في التشغيل
+      function switchMode(newMode) {
+        // لو المستخدم ضغط تاب يدوياً وهو شغال، وقّف
+        if (isRunning) pauseTimer();
+
         mode = newMode;
+        document.body.className = newMode === "rest" ? "mode-rest" : newMode === "long" ? "mode-long" : "";
+        document.querySelectorAll(".session-tab").forEach(t => t.classList.remove("active"));
+        document.getElementById("tab-" + newMode).classList.add("active");
 
-        // تحديث الألوان والتصميم
-        document.body.className =
-          newMode === "rest"
-            ? "mode-rest"
-            : newMode === "long"
-              ? "mode-long"
-              : "";
-
-        // تحديث التبويبات
-        document
-          .querySelectorAll(".session-tab")
-          .forEach((t) => t.classList.remove("active"));
-        document.getElementById(`tab-${newMode}`).classList.add("active");
-
-        // تحديث الوقت
-        const durations = {
-          focus: settings.focusMins,
-          rest: settings.restMins,
-          long: settings.longMins,
-        };
+        const durations = { focus: settings.focusMins, rest: settings.restMins, long: settings.longMins };
         remainingSeconds = durations[newMode] * 60;
         totalSeconds = remainingSeconds;
 
-        // تحديث التسمية
-        const labels = {
-          focus: "وقت تركيز",
-          rest: "راحة قصيرة",
-          long: "راحة طويلة ☕",
-        };
+        const labels = { focus: "وقت تركيز", rest: "راحة قصيرة", long: "راحة طويلة ☕" };
         document.getElementById("session-label").textContent = labels[newMode];
 
         updateDisplay();
         updateRing(1);
-
-        if (!auto) isRunning = false;
         updateMainBtn();
       }
-      // saveTimerState
-      function saveTimerState() {
-        const state = {
-          mode: mode,
-          remainingSeconds: remainingSeconds,
-          isRunning: isRunning,
-          expectedEndTime: expectedEndTime,
-          lastUpdated: Date.now(),
-        };
-        localStorage.setItem("pomodoro_current_state", JSON.stringify(state));
+
+      // FIX 2: switchModeAuto — للتبديل التلقائي بين الجلسات بدون إيقاف التايمر
+      function switchModeAuto(newMode) {
+        mode = newMode;
+        document.body.className = newMode === "rest" ? "mode-rest" : newMode === "long" ? "mode-long" : "";
+        document.querySelectorAll(".session-tab").forEach(t => t.classList.remove("active"));
+        document.getElementById("tab-" + newMode).classList.add("active");
+
+        const durations = { focus: settings.focusMins, rest: settings.restMins, long: settings.longMins };
+        remainingSeconds = durations[newMode] * 60;
+        totalSeconds = remainingSeconds;
+
+        const labels = { focus: "وقت تركيز", rest: "راحة قصيرة", long: "راحة طويلة ☕" };
+        document.getElementById("session-label").textContent = labels[newMode];
+
+        updateDisplay();
+        updateRing(1);
       }
-      // ===== تشغيل/إيقاف المؤقت =====
+
+      function saveTimerState() {
+        localStorage.setItem("pomodoro_current_state", JSON.stringify({
+          mode, remainingSeconds, isRunning, expectedEndTime, lastUpdated: Date.now()
+        }));
+      }
+
       function toggleTimer() {
-        if (isRunning) {
-          pauseTimer();
-        } else {
-          startTimer();
-        }
+        isRunning ? pauseTimer() : startTimer();
       }
 
       function startTimer() {
         isRunning = true;
         document.getElementById("app").classList.add("ticking");
         updateMainBtn();
-
-        // حساب وقت الانتهاء بناءً على ساعة الجهاز الحقيقية بالملي ثانية
         expectedEndTime = Date.now() + remainingSeconds * 1000;
-
-        // خلينا النبضة أسرع (نصف ثانية) عشان الشاشة تتحدث فوراً أول ما تفتح الموبايل
         intervalId = setInterval(tick, 500);
       }
 
@@ -875,36 +696,34 @@
         clearInterval(intervalId);
         intervalId = null;
         updateMainBtn();
-        // remainingSeconds محتفظة بآخر قيمة صحيحة تم حسابها
+        saveTimerState();
       }
 
-      // ===== النبضة الزمنية =====
       function tick() {
         const now = Date.now();
         remainingSeconds = Math.round((expectedEndTime - now) / 1000);
 
         if (remainingSeconds <= 0) {
           remainingSeconds = 0;
-          localStorage.removeItem("pomodoro_current_state"); // نمسح الحالة لما يخلص
+          updateDisplay();
+          updateRing(0);
+          localStorage.removeItem("pomodoro_current_state");
+          // FIX 3: نوقف الـ interval قبل ما ندخل onSessionComplete
+          clearInterval(intervalId);
+          intervalId = null;
+          isRunning = false;
+          document.getElementById("app").classList.remove("ticking");
+          updateMainBtn();
           onSessionComplete();
           return;
         }
 
         updateDisplay();
         updateRing(remainingSeconds / totalSeconds);
-        saveTimerState(); // <--- ضيف السطر ده هنا
+        saveTimerState();
       }
 
-      // ===== انتهاء الجلسة =====
       function onSessionComplete() {
-        clearInterval(intervalId);
-        intervalId = null;
-        isRunning = false;
-        document.getElementById("app").classList.remove("ticking");
-        remainingSeconds = 0;
-        updateDisplay();
-        updateRing(0);
-
         if (mode === "focus") {
           sessionRounds++;
           focusMinutesTotal += settings.focusMins;
@@ -912,75 +731,65 @@
           updateStats();
 
           const isLongBreak = sessionRounds % settings.roundsBeforeLong === 0;
-          sendNotification(
-            "انتهى وقت التركيز! 🎉",
-            "حان وقت الراحة — خذ استراحة مستحقة",
-          );
+          sendNotification("انتهى وقت التركيز! 🎉", "حان وقت الراحة — خذ استراحة مستحقة");
+
           setTimeout(() => {
-            switchMode(isLongBreak ? "long" : "rest", true);
+            switchModeAuto(isLongBreak ? "long" : "rest");
             startTimer();
           }, 1200);
         } else {
           sendNotification("انتهت الراحة! 💪", "عد للتركيز — أنت قادر على ذلك");
           setTimeout(() => {
-            switchMode("focus", true);
+            switchModeAuto("focus");
             startTimer();
           }, 1200);
         }
       }
 
-      // ===== إعادة تعيين المؤقت =====
       function resetTimer() {
         pauseTimer();
-        const durations = {
-          focus: settings.focusMins,
-          rest: settings.restMins,
-          long: settings.longMins,
-        };
+        const durations = { focus: settings.focusMins, rest: settings.restMins, long: settings.longMins };
         remainingSeconds = durations[mode] * 60;
         totalSeconds = remainingSeconds;
         updateDisplay();
         updateRing(1);
+        localStorage.removeItem("pomodoro_current_state");
         showToast("تم إعادة تعيين المؤقت");
       }
 
-      // ===== تخطي الجلسة =====
       function skipSession() {
         if (!confirm("هل تريد تخطي هذه الجلسة؟")) return;
+        // FIX 4: وقّف التايمر الشغال قبل تخطي الجلسة
+        clearInterval(intervalId);
+        intervalId = null;
+        isRunning = false;
+        document.getElementById("app").classList.remove("ticking");
+        updateMainBtn();
+        localStorage.removeItem("pomodoro_current_state");
         onSessionComplete();
       }
 
-      // ===== تحديث الشاشة =====
       function updateDisplay() {
-        const m = Math.floor(remainingSeconds / 60)
-          .toString()
-          .padStart(2, "0");
+        const m = Math.floor(remainingSeconds / 60).toString().padStart(2, "0");
         const s = (remainingSeconds % 60).toString().padStart(2, "0");
-        document.getElementById("timer-display").textContent = `${m}:${s}`;
-        document.title = `${m}:${s} | بومودورو`;
+        document.getElementById("timer-display").textContent = m + ":" + s;
+        document.title = m + ":" + s + " | بومودورو";
       }
 
-      // ===== تحديث الحلقة الدائرية =====
       function updateRing(ratio) {
         const circumference = 339.3;
-        const offset = circumference * (1 - ratio);
-        document.getElementById("ring-progress").style.strokeDashoffset =
-          offset;
+        document.getElementById("ring-progress").style.strokeDashoffset = circumference * (1 - Math.max(0, Math.min(1, ratio)));
       }
 
-      // ===== تحديث زر التشغيل =====
       function updateMainBtn() {
-        const btn = document.getElementById("main-btn");
-        btn.textContent = isRunning ? "⏸ توقف" : "▶ ابدأ";
+        document.getElementById("main-btn").textContent = isRunning ? "⏸ توقف" : "▶ ابدأ";
       }
 
-      // ===== تحديث الإحصائيات =====
       function updateStats() {
+        // FIX 5: stat-session يعرض الجولة الحالية داخل الدورة بشكل واضح
+        const currentInCycle = sessionRounds % settings.roundsBeforeLong;
         document.getElementById("stat-today").textContent = sessionRounds;
-        document.getElementById("stat-session").textContent =
-          Math.floor(sessionRounds % settings.roundsBeforeLong) +
-          "/" +
-          settings.roundsBeforeLong;
+        document.getElementById("stat-session").textContent = currentInCycle + "/" + settings.roundsBeforeLong;
         document.getElementById("stat-streak").textContent = focusMinutesTotal;
         updateRoundsDots();
       }
@@ -993,42 +802,36 @@
           const dot = document.createElement("div");
           dot.className = "round-dot";
           if (i < completed) dot.classList.add("done");
-          else if (i === completed && mode === "focus")
-            dot.classList.add("current");
+          else if (i === completed && mode === "focus") dot.classList.add("current");
           container.appendChild(dot);
         }
       }
 
-      // ===== تطبيق الإعدادات =====
       function applySettings() {
-        const focus =
-          parseInt(document.getElementById("inp-focus").value) ||
-          DEFAULTS.focusMins;
-        const rest =
-          parseInt(document.getElementById("inp-rest").value) ||
-          DEFAULTS.restMins;
-        const long =
-          parseInt(document.getElementById("inp-long").value) ||
-          DEFAULTS.longMins;
-        const rounds =
-          parseInt(document.getElementById("inp-rounds").value) ||
-          DEFAULTS.roundsBeforeLong;
+        const focus = parseInt(document.getElementById("inp-focus").value) || DEFAULTS.focusMins;
+        const rest  = parseInt(document.getElementById("inp-rest").value)  || DEFAULTS.restMins;
+        const long  = parseInt(document.getElementById("inp-long").value)  || DEFAULTS.longMins;
+        const rounds = parseInt(document.getElementById("inp-rounds").value) || DEFAULTS.roundsBeforeLong;
 
         settings = {
           focusMins: Math.max(1, Math.min(90, focus)),
-          restMins: Math.max(1, Math.min(30, rest)),
-          longMins: Math.max(1, Math.min(60, long)),
+          restMins:  Math.max(1, Math.min(30, rest)),
+          longMins:  Math.max(1, Math.min(60, long)),
           roundsBeforeLong: Math.max(1, Math.min(10, rounds)),
         };
 
         saveSettings();
         pauseTimer();
-        switchMode(mode);
+        // إعادة تعيين الوقت للوضع الحالي بالإعدادات الجديدة
+        const durations = { focus: settings.focusMins, rest: settings.restMins, long: settings.longMins };
+        remainingSeconds = durations[mode] * 60;
+        totalSeconds = remainingSeconds;
+        updateDisplay();
+        updateRing(1);
         updateStats();
         showToast("✓ تم حفظ الإعدادات");
       }
 
-      // ===== إعادة ضبط كل شيء =====
       function resetAll() {
         if (!confirm("إعادة ضبط كل الإعدادات والإحصائيات؟")) return;
         settings = { ...DEFAULTS };
@@ -1037,19 +840,27 @@
         focusMinutesTotal = 0;
         saveStats();
 
-        // تحديث حقول الإدخال
-        document.getElementById("inp-focus").value = settings.focusMins;
-        document.getElementById("inp-rest").value = settings.restMins;
-        document.getElementById("inp-long").value = settings.longMins;
+        document.getElementById("inp-focus").value  = settings.focusMins;
+        document.getElementById("inp-rest").value   = settings.restMins;
+        document.getElementById("inp-long").value   = settings.longMins;
         document.getElementById("inp-rounds").value = settings.roundsBeforeLong;
 
         pauseTimer();
-        switchMode("focus");
+        localStorage.removeItem("pomodoro_current_state");
+        // FIX 6: بعد resetAll، نرجع لوضع التركيز بدون استدعاء switchMode العادية
+        mode = "focus";
+        document.body.className = "";
+        document.querySelectorAll(".session-tab").forEach(t => t.classList.remove("active"));
+        document.getElementById("tab-focus").classList.add("active");
+        document.getElementById("session-label").textContent = "وقت تركيز";
+        remainingSeconds = settings.focusMins * 60;
+        totalSeconds = remainingSeconds;
+        updateDisplay();
+        updateRing(1);
         updateStats();
         showToast("تم إعادة الضبط إلى الافتراضيات");
       }
 
-      // ===== لوحة الإعدادات =====
       function toggleSettings() {
         const panel = document.getElementById("settings-panel");
         const toggle = document.getElementById("settings-toggle");
@@ -1058,7 +869,6 @@
         toggle.setAttribute("aria-expanded", isOpen);
       }
 
-      // ===== Toast =====
       let toastTimeout = null;
       function showToast(msg) {
         const toast = document.getElementById("toast");
@@ -1068,53 +878,58 @@
         toastTimeout = setTimeout(() => toast.classList.remove("show"), 3000);
       }
 
-      // ===== التهيئة الأولى =====
       function init() {
-        // 1. تحميل الإعدادات والإحصائيات كالعادة
         loadStats();
-        document.getElementById("inp-focus").value = settings.focusMins;
-        document.getElementById("inp-rest").value = settings.restMins;
-        document.getElementById("inp-long").value = settings.longMins;
+        document.getElementById("inp-focus").value  = settings.focusMins;
+        document.getElementById("inp-rest").value   = settings.restMins;
+        document.getElementById("inp-long").value   = settings.longMins;
         document.getElementById("inp-rounds").value = settings.roundsBeforeLong;
 
-        // 2. محاولة استعادة حالة المؤقت السابقة
         const savedState = localStorage.getItem("pomodoro_current_state");
 
         if (savedState) {
-          const state = JSON.parse(savedState);
-          mode = state.mode;
-          isRunning = state.isRunning;
+          try {
+            const state = JSON.parse(savedState);
+            mode = state.mode || "focus";
 
-          if (isRunning) {
-            // لو كان شغال، نحسب الوقت اللي فات وإحنا قافلين
-            const now = Date.now();
-            expectedEndTime = state.expectedEndTime;
-            remainingSeconds = Math.round((expectedEndTime - now) / 1000);
+            // تحديث الواجهة للوضع المحفوظ بدون استدعاء switchMode (حتى لا يُعاد تعيين الوقت)
+            document.body.className = mode === "rest" ? "mode-rest" : mode === "long" ? "mode-long" : "";
+            document.querySelectorAll(".session-tab").forEach(t => t.classList.remove("active"));
+            document.getElementById("tab-" + mode).classList.add("active");
+            const labels = { focus: "وقت تركيز", rest: "راحة قصيرة", long: "راحة طويلة ☕" };
+            document.getElementById("session-label").textContent = labels[mode];
 
-            if (remainingSeconds > 0) {
-              startTimer(); // كمل عد من مكان ما كنت
+            totalSeconds = (mode === "focus" ? settings.focusMins : mode === "rest" ? settings.restMins : settings.longMins) * 60;
+
+            if (state.isRunning && state.expectedEndTime) {
+              expectedEndTime = state.expectedEndTime;
+              remainingSeconds = Math.round((expectedEndTime - Date.now()) / 1000);
+
+              if (remainingSeconds > 0) {
+                // FIX 7: نبدأ التايمر مباشرة بدون استدعاء switchMode
+                isRunning = true;
+                document.getElementById("app").classList.add("ticking");
+                updateMainBtn();
+                intervalId = setInterval(tick, 500);
+              } else {
+                remainingSeconds = 0;
+                onSessionComplete();
+              }
             } else {
-              remainingSeconds = 0;
-              onSessionComplete();
+              // كان موقوف — نرجع الوقت اللي وقف عنده
+              remainingSeconds = Math.max(0, state.remainingSeconds || totalSeconds);
+              isRunning = false;
+              updateMainBtn();
             }
-          } else {
-            // لو كان واقف (Paused)، نرجعه لنفس الرقم اللي وقف عنده
-            remainingSeconds = state.remainingSeconds;
+          } catch {
+            localStorage.removeItem("pomodoro_current_state");
+            remainingSeconds = settings.focusMins * 60;
+            totalSeconds = remainingSeconds;
           }
-
-          // تحديث الواجهة بناءً على الحالة المستعادة
-          switchMode(mode, true);
         } else {
-          // لو مفيش حالة محفوظة، ابدأ عادي
           remainingSeconds = settings.focusMins * 60;
+          totalSeconds = remainingSeconds;
         }
-
-        totalSeconds =
-          (mode === "focus"
-            ? settings.focusMins
-            : mode === "rest"
-              ? settings.restMins
-              : settings.longMins) * 60;
 
         updateDisplay();
         updateRing(remainingSeconds / totalSeconds);
