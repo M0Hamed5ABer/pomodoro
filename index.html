@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>بومودورو | مؤقت التركيز</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ===== CSS Variables & Reset ===== */
+      :root {
+        --focus-hue: 12;
+        --rest-hue: 195;
+        --long-hue: 150;
+
+        --bg: #0d0d0f;
+        --surface: #161619;
+        --surface2: #1e1e23;
+        --border: rgba(255, 255, 255, 0.07);
+        --text: #f0ede8;
+        --text-dim: rgba(240, 237, 232, 0.45);
+        --accent: hsl(var(--focus-hue), 90%, 62%);
+        --accent-glow: hsl(var(--focus-hue), 90%, 62%);
+        --ring-size: min(52vw, 320px);
+        --transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Readex Pro", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+      }
+
+      /* ===== Background Mesh ===== */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 60% 50% at 20% 10%,
+            hsla(var(--focus-hue), 80%, 40%, 0.12) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 50% 60% at 80% 90%,
+            hsla(var(--rest-hue), 80%, 40%, 0.08) 0%,
+            transparent 60%
+          );
+        pointer-events: none;
+        transition: background var(--transition);
+        z-index: 0;
+      }
+
+      /* ===== Layout ===== */
+      .app {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 540px);
+        padding: 2rem 1.5rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      /* ===== Header ===== */
+      header {
+        text-align: center;
+        padding-top: 1rem;
+      }
+
+      header h1 {
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+
+      /* ===== Session Tabs ===== */
+      .session-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.35rem;
+      }
+
+      .session-tab {
+        flex: 1;
+        padding: 0.55rem 0.5rem;
+        border: none;
+        background: transparent;
+        color: var(--text-dim);
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 0.02em;
+      }
+
+      .session-tab.active {
+        background: var(--accent);
+        color: #0d0d0f;
+        box-shadow: 0 0 18px hsla(var(--focus-hue), 90%, 62%, 0.4);
+      }
+
+      /* ===== Timer Ring ===== */
+      .timer-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem 0;
+      }
+
+      .ring-container {
+        position: relative;
+        width: var(--ring-size);
+        height: var(--ring-size);
+      }
+
+      .ring-svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+
+      .ring-bg {
+        fill: none;
+        stroke: var(--surface2);
+        stroke-width: 6;
+      }
+
+      .ring-progress {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 6;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 8px var(--accent-glow));
+        transition:
+          stroke-dashoffset 1s linear,
+          stroke 0.6s ease;
+      }
+
+      .timer-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+      }
+
+      #timer-display {
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(3rem, 14vw, 5.5rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--text);
+        text-shadow: 0 0 40px var(--accent-glow);
+        transition: text-shadow var(--transition);
+      }
+
+      .session-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--accent);
+        transition: color var(--transition);
+      }
+
+      /* ===== Controls ===== */
+      .controls {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .btn {
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        letter-spacing: 0.03em;
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #0d0d0f;
+        font-size: 1rem;
+        padding: 0.9rem 2.8rem;
+        box-shadow: 0 0 24px hsla(var(--focus-hue), 90%, 62%, 0.35);
+      }
+
+      .btn-primary:hover {
+        filter: brightness(1.15);
+        box-shadow: 0 0 36px hsla(var(--focus-hue), 90%, 62%, 0.55);
+      }
+
+      .btn-icon {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-icon:hover {
+        background: var(--surface2);
+        color: var(--text);
+        border-color: var(--accent);
+      }
+
+      /* ===== Stats Bar ===== */
+      .stats-bar {
+        display: flex;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+      }
+
+      .stat-item {
+        flex: 1;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent);
+        transition: color var(--transition);
+        line-height: 1;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        margin-top: 0.3rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .stat-divider {
+        width: 1px;
+        background: var(--border);
+      }
+
+      /* ===== Rounds Dots ===== */
+      .rounds-visual {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .round-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        transition: all 0.3s ease;
+      }
+
+      .round-dot.done {
+        background: var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 0 8px var(--accent-glow);
+      }
+
+      .round-dot.current {
+        border-color: var(--accent);
+        animation: pulse-dot 1.2s ease-in-out infinite;
+      }
+
+      @keyframes pulse-dot {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 1;
+        }
+      }
+
+      /* ===== Settings Panel ===== */
+      .settings-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        color: var(--text-dim);
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin: 0 auto;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        transition: color 0.2s;
+      }
+
+      .settings-toggle:hover {
+        color: var(--text);
+      }
+
+      .settings-toggle .arrow {
+        transition: transform 0.3s ease;
+        font-size: 0.7rem;
+      }
+
+      .settings-toggle.open .arrow {
+        transform: rotate(180deg);
+      }
+
+      .settings-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        max-height: 0;
+        transition:
+          max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          padding 0.4s;
+      }
+
+      .settings-panel.open {
+        max-height: 500px;
+      }
+
+      .settings-inner {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .setting-field label {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.4rem;
+      }
+
+      .setting-field input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.6rem 0.75rem;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1rem;
+        font-weight: 700;
+        text-align: center;
+        transition: border-color 0.2s;
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+
+      .setting-field input::-webkit-inner-spin-button,
+      .setting-field input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      .setting-field input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .settings-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .btn-apply {
+        flex: 2;
+        background: var(--accent);
+        color: #0d0d0f;
+        font-size: 0.85rem;
+        padding: 0.7rem;
+        box-shadow: 0 0 18px hsla(var(--focus-hue), 90%, 62%, 0.3);
+      }
+
+      .btn-apply:hover {
+        filter: brightness(1.15);
+      }
+
+      .btn-reset {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: 0.8rem;
+        padding: 0.7rem;
+      }
+
+      .btn-reset:hover {
+        border-color: #e05555;
+        color: #e05555;
+      }
+
+      /* ===== Toast ===== */
+      #toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(120%);
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.85rem;
+        color: var(--text);
+        white-space: nowrap;
+        z-index: 100;
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 400px) {
+        .stats-bar {
+          padding: 0.75rem;
+          gap: 0.6rem;
+        }
+        .stat-value {
+          font-size: 1.3rem;
+        }
+        .settings-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      /* ===== Mode Color Transitions ===== */
+      body.mode-rest {
+        --focus-hue: 195;
+        --accent: hsl(195, 80%, 58%);
+        --accent-glow: hsl(195, 80%, 58%);
+      }
+
+      body.mode-long {
+        --focus-hue: 150;
+        --accent: hsl(150, 70%, 52%);
+        --accent-glow: hsl(150, 70%, 52%);
+      }
+
+      /* Tick animation */
+      @keyframes tick-pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .ticking #timer-display {
+        animation: tick-pulse 1s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- Header -->
+      <header>
+        <h1>🍅 بومودورو</h1>
+      </header>
+
+      <!-- Session Tabs -->
+      <div class="session-tabs" role="tablist">
+        <button
+          class="session-tab active"
+          id="tab-focus"
+          onclick="switchMode('focus')"
+          role="tab"
+        >
+          تركيز
+        </button>
+        <button
+          class="session-tab"
+          id="tab-rest"
+          onclick="switchMode('rest')"
+          role="tab"
+        >
+          راحة قصيرة
+        </button>
+        <button
+          class="session-tab"
+          id="tab-long"
+          onclick="switchMode('long')"
+          role="tab"
+        >
+          راحة طويلة
+        </button>
+      </div>
+
+      <!-- Timer Ring -->
+      <div class="timer-wrap">
+        <div class="ring-container">
+          <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="54" />
+            <circle
+              class="ring-progress"
+              id="ring-progress"
+              cx="60"
+              cy="60"
+              r="54"
+              stroke-dasharray="339.3"
+              stroke-dashoffset="0"
+            />
+          </svg>
+          <div class="timer-center">
+            <div id="timer-display">25:00</div>
+            <div class="session-label" id="session-label">وقت تركيز</div>
+          </div>
+        </div>
+
+        <!-- Round dots -->
+        <div class="rounds-visual" id="rounds-dots"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button
+          class="btn btn-icon"
+          onclick="resetTimer()"
+          title="إعادة تعيين"
+          aria-label="إعادة تعيين"
+        >
+          ↺
+        </button>
+        <button
+          class="btn btn-primary"
+          id="main-btn"
+          onclick="toggleTimer()"
+          aria-label="بدء"
+        >
+          ▶ ابدأ
+        </button>
+        <button
+          class="btn btn-icon"
+          onclick="skipSession()"
+          title="تخطي"
+          aria-label="تخطي الجلسة"
+        >
+          ⏭
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar" aria-label="إحصائيات">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-today">0</div>
+          <div class="stat-label">جلسات اليوم</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-session">0</div>
+          <div class="stat-label">جلسة الآن</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">دقيقة تركيز</div>
+        </div>
+      </div>
+
+      <!-- Settings Toggle -->
+      <button
+        class="settings-toggle"
+        id="settings-toggle"
+        onclick="toggleSettings()"
+        aria-expanded="false"
+      >
+        ⚙ الإعدادات <span class="arrow">▼</span>
+      </button>
+
+      <!-- Settings Panel -->
+      <div
+        class="settings-panel"
+        id="settings-panel"
+        role="region"
+        aria-label="إعدادات المؤقت"
+      >
+        <div class="settings-inner">
+          <div class="settings-grid">
+            <div class="setting-field">
+              <label for="inp-focus">التركيز (د)</label>
+              <input type="number" id="inp-focus" min="1" max="90" value="25" />
+            </div>
+            <div class="setting-field">
+              <label for="inp-rest">راحة قصيرة (د)</label>
+              <input type="number" id="inp-rest" min="1" max="30" value="5" />
+            </div>
+            <div class="setting-field">
+              <label for="inp-long">راحة طويلة (د)</label>
+              <input type="number" id="inp-long" min="1" max="60" value="15" />
+            </div>
+            <div class="setting-field">
+              <label for="inp-rounds">جولات قبل الراحة الطويلة</label>
+              <input type="number" id="inp-rounds" min="1" max="10" value="4" />
+            </div>
+          </div>
+          <div class="settings-actions">
+            <button class="btn btn-apply" onclick="applySettings()">
+              ✓ تطبيق
+            </button>
+            <button class="btn btn-reset" onclick="resetAll()">
+              ↺ إعادة ضبط
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      // ===== الحالة الأساسية =====
+      const DEFAULTS = {
+        focusMins: 25,
+        restMins: 5,
+        longMins: 15,
+        roundsBeforeLong: 4,
+      };
+
+      let settings = loadSettings();
+      let mode = "focus"; // 'focus' | 'rest' | 'long'
+      let isRunning = false;
+      let remainingSeconds = settings.focusMins * 60;
+      let totalSeconds = settings.focusMins * 60;
+      let intervalId = null;
+      let sessionRounds = 0; // جولات الجلسة الحالية
+      let focusMinutesTotal = 0; // إجمالي دقائق التركيز
+
+      // ===== تحميل الإعدادات من localStorage =====
+      function loadSettings() {
+        try {
+          const stored = localStorage.getItem("pomodoro_settings");
+          return stored
+            ? { ...DEFAULTS, ...JSON.parse(stored) }
+            : { ...DEFAULTS };
+        } catch {
+          return { ...DEFAULTS };
+        }
+      }
+
+      function saveSettings() {
+        localStorage.setItem("pomodoro_settings", JSON.stringify(settings));
+      }
+
+      // ===== تحميل الإحصائيات اليومية =====
+      function loadStats() {
+        try {
+          const today = new Date().toDateString();
+          const stored = localStorage.getItem("pomodoro_stats");
+          if (stored) {
+            const data = JSON.parse(stored);
+            if (data.date === today) {
+              sessionRounds = data.sessionRounds || 0;
+              focusMinutesTotal = data.focusMinutes || 0;
+              return;
+            }
+          }
+        } catch {}
+        sessionRounds = 0;
+        focusMinutesTotal = 0;
+      }
+
+      function saveStats() {
+        const today = new Date().toDateString();
+        localStorage.setItem(
+          "pomodoro_stats",
+          JSON.stringify({
+            date: today,
+            sessionRounds,
+            focusMinutes: focusMinutesTotal,
+          }),
+        );
+      }
+
+      // ===== طلب إذن الإشعارات =====
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+
+      function sendNotification(title, body) {
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(title, { body, icon: "🍅" });
+        }
+        playBeep();
+        showToast(`${title} — ${body}`);
+      }
+
+      // ===== صوت البيب =====
+      function playBeep() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const notes = [880, 1100, 1320];
+          notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = "sine";
+            const t = ctx.currentTime + i * 0.18;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            osc.start(t);
+            osc.stop(t + 0.25);
+          });
+        } catch {}
+      }
+
+      // ===== التبديل بين الأوضاع =====
+      function switchMode(newMode, auto = false) {
+        if (isRunning && !auto) {
+          pauseTimer();
+        }
+        mode = newMode;
+
+        // تحديث الألوان والتصميم
+        document.body.className =
+          newMode === "rest"
+            ? "mode-rest"
+            : newMode === "long"
+              ? "mode-long"
+              : "";
+
+        // تحديث التبويبات
+        document
+          .querySelectorAll(".session-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById(`tab-${newMode}`).classList.add("active");
+
+        // تحديث الوقت
+        const durations = {
+          focus: settings.focusMins,
+          rest: settings.restMins,
+          long: settings.longMins,
+        };
+        remainingSeconds = durations[newMode] * 60;
+        totalSeconds = remainingSeconds;
+
+        // تحديث التسمية
+        const labels = {
+          focus: "وقت تركيز",
+          rest: "راحة قصيرة",
+          long: "راحة طويلة ☕",
+        };
+        document.getElementById("session-label").textContent = labels[newMode];
+
+        updateDisplay();
+        updateRing(1);
+
+        if (!auto) isRunning = false;
+        updateMainBtn();
+      }
+
+      // ===== تشغيل/إيقاف المؤقت =====
+      function toggleTimer() {
+        if (isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      }
+
+      function startTimer() {
+        isRunning = true;
+        document.getElementById("app").classList.add("ticking");
+        updateMainBtn();
+        intervalId = setInterval(tick, 1000);
+      }
+
+      function pauseTimer() {
+        isRunning = false;
+        document.getElementById("app").classList.remove("ticking");
+        clearInterval(intervalId);
+        intervalId = null;
+        updateMainBtn();
+      }
+
+      // ===== النبضة الزمنية =====
+      function tick() {
+        if (remainingSeconds <= 0) {
+          onSessionComplete();
+          return;
+        }
+        remainingSeconds--;
+
+        // تراكم دقائق التركيز
+        if (mode === "focus" && remainingSeconds % 60 === 0) {
+          focusMinutesTotal++;
+          saveStats();
+          updateStats();
+        }
+
+        updateDisplay();
+        updateRing(remainingSeconds / totalSeconds);
+      }
+
+      // ===== انتهاء الجلسة =====
+      function onSessionComplete() {
+        clearInterval(intervalId);
+        intervalId = null;
+        isRunning = false;
+        document.getElementById("app").classList.remove("ticking");
+        remainingSeconds = 0;
+        updateDisplay();
+        updateRing(0);
+
+        if (mode === "focus") {
+          sessionRounds++;
+          focusMinutesTotal += settings.focusMins;
+          saveStats();
+          updateStats();
+
+          const isLongBreak = sessionRounds % settings.roundsBeforeLong === 0;
+          sendNotification(
+            "انتهى وقت التركيز! 🎉",
+            "حان وقت الراحة — خذ استراحة مستحقة",
+          );
+          setTimeout(() => {
+            switchMode(isLongBreak ? "long" : "rest", true);
+            startTimer();
+          }, 1200);
+        } else {
+          sendNotification("انتهت الراحة! 💪", "عد للتركيز — أنت قادر على ذلك");
+          setTimeout(() => {
+            switchMode("focus", true);
+            startTimer();
+          }, 1200);
+        }
+      }
+
+      // ===== إعادة تعيين المؤقت =====
+      function resetTimer() {
+        pauseTimer();
+        const durations = {
+          focus: settings.focusMins,
+          rest: settings.restMins,
+          long: settings.longMins,
+        };
+        remainingSeconds = durations[mode] * 60;
+        totalSeconds = remainingSeconds;
+        updateDisplay();
+        updateRing(1);
+        showToast("تم إعادة تعيين المؤقت");
+      }
+
+      // ===== تخطي الجلسة =====
+      function skipSession() {
+        if (!confirm("هل تريد تخطي هذه الجلسة؟")) return;
+        onSessionComplete();
+      }
+
+      // ===== تحديث الشاشة =====
+      function updateDisplay() {
+        const m = Math.floor(remainingSeconds / 60)
+          .toString()
+          .padStart(2, "0");
+        const s = (remainingSeconds % 60).toString().padStart(2, "0");
+        document.getElementById("timer-display").textContent = `${m}:${s}`;
+        document.title = `${m}:${s} | بومودورو`;
+      }
+
+      // ===== تحديث الحلقة الدائرية =====
+      function updateRing(ratio) {
+        const circumference = 339.3;
+        const offset = circumference * (1 - ratio);
+        document.getElementById("ring-progress").style.strokeDashoffset =
+          offset;
+      }
+
+      // ===== تحديث زر التشغيل =====
+      function updateMainBtn() {
+        const btn = document.getElementById("main-btn");
+        btn.textContent = isRunning ? "⏸ توقف" : "▶ ابدأ";
+      }
+
+      // ===== تحديث الإحصائيات =====
+      function updateStats() {
+        document.getElementById("stat-today").textContent = sessionRounds;
+        document.getElementById("stat-session").textContent =
+          Math.floor(sessionRounds % settings.roundsBeforeLong) +
+          "/" +
+          settings.roundsBeforeLong;
+        document.getElementById("stat-streak").textContent = focusMinutesTotal;
+        updateRoundsDots();
+      }
+
+      function updateRoundsDots() {
+        const container = document.getElementById("rounds-dots");
+        container.innerHTML = "";
+        const completed = sessionRounds % settings.roundsBeforeLong;
+        for (let i = 0; i < settings.roundsBeforeLong; i++) {
+          const dot = document.createElement("div");
+          dot.className = "round-dot";
+          if (i < completed) dot.classList.add("done");
+          else if (i === completed && mode === "focus")
+            dot.classList.add("current");
+          container.appendChild(dot);
+        }
+      }
+
+      // ===== تطبيق الإعدادات =====
+      function applySettings() {
+        const focus =
+          parseInt(document.getElementById("inp-focus").value) ||
+          DEFAULTS.focusMins;
+        const rest =
+          parseInt(document.getElementById("inp-rest").value) ||
+          DEFAULTS.restMins;
+        const long =
+          parseInt(document.getElementById("inp-long").value) ||
+          DEFAULTS.longMins;
+        const rounds =
+          parseInt(document.getElementById("inp-rounds").value) ||
+          DEFAULTS.roundsBeforeLong;
+
+        settings = {
+          focusMins: Math.max(1, Math.min(90, focus)),
+          restMins: Math.max(1, Math.min(30, rest)),
+          longMins: Math.max(1, Math.min(60, long)),
+          roundsBeforeLong: Math.max(1, Math.min(10, rounds)),
+        };
+
+        saveSettings();
+        pauseTimer();
+        switchMode(mode);
+        updateStats();
+        showToast("✓ تم حفظ الإعدادات");
+      }
+
+      // ===== إعادة ضبط كل شيء =====
+      function resetAll() {
+        if (!confirm("إعادة ضبط كل الإعدادات والإحصائيات؟")) return;
+        settings = { ...DEFAULTS };
+        saveSettings();
+        sessionRounds = 0;
+        focusMinutesTotal = 0;
+        saveStats();
+
+        // تحديث حقول الإدخال
+        document.getElementById("inp-focus").value = settings.focusMins;
+        document.getElementById("inp-rest").value = settings.restMins;
+        document.getElementById("inp-long").value = settings.longMins;
+        document.getElementById("inp-rounds").value = settings.roundsBeforeLong;
+
+        pauseTimer();
+        switchMode("focus");
+        updateStats();
+        showToast("تم إعادة الضبط إلى الافتراضيات");
+      }
+
+      // ===== لوحة الإعدادات =====
+      function toggleSettings() {
+        const panel = document.getElementById("settings-panel");
+        const toggle = document.getElementById("settings-toggle");
+        const isOpen = panel.classList.toggle("open");
+        toggle.classList.toggle("open", isOpen);
+        toggle.setAttribute("aria-expanded", isOpen);
+      }
+
+      // ===== Toast =====
+      let toastTimeout = null;
+      function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove("show"), 3000);
+      }
+
+      // ===== التهيئة الأولى =====
+      function init() {
+        // تحميل الإعدادات المحفوظة
+        document.getElementById("inp-focus").value = settings.focusMins;
+        document.getElementById("inp-rest").value = settings.restMins;
+        document.getElementById("inp-long").value = settings.longMins;
+        document.getElementById("inp-rounds").value = settings.roundsBeforeLong;
+
+        // تحميل إحصائيات اليوم
+        loadStats();
+
+        // ضبط المؤقت
+        remainingSeconds = settings.focusMins * 60;
+        totalSeconds = remainingSeconds;
+
+        updateDisplay();
+        updateRing(1);
+        updateStats();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
